@@ -273,14 +273,14 @@ struct HomeView: View {
                         Button { router.tab = .library } label: {
                             VStack(spacing: 6) {
                                 Image(systemName: "square.grid.2x2.fill").font(.system(size: 20, weight: .semibold))
-                                Text("All").font(.system(size: 12, weight: .semibold))
+                                Text("全部").font(.system(size: 12, weight: .semibold))
                             }
                             .foregroundStyle(Console.text.opacity(0.8))
                             .frame(width: 72, height: 72)
                             .background(Console.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                         }
                         .buttonStyle(CardButtonStyle())
-                        .accessibilityLabel("Open the Library")
+                        .accessibilityLabel("打开游戏库")
                     }
                 }
                 .padding(.horizontal, 20)
@@ -325,10 +325,10 @@ struct HomeView: View {
             }
             HStack(spacing: 10) {
                 Button { Launcher.play(item) { router.home.append($0) } } label: {
-                    Label(item.isGame ? "Play" : "Open", systemImage: item.isGame ? "play.fill" : "arrow.up.forward.app.fill")
+                    Label(item.isGame ? "开始游戏" : "打开应用", systemImage: item.isGame ? "play.fill" : "arrow.up.forward.app.fill")
                 }
                 .buttonStyle(ConsolePlayButtonStyle())
-                .accessibilityLabel((item.isGame ? "Play " : "Open ") + item.title)
+                .accessibilityLabel((item.isGame ? "开始游戏 " : "打开应用 ") + item.title)
                 HomeMoreButton(item: item)
             }
             .padding(.top, 10)
@@ -347,7 +347,7 @@ struct HomeView: View {
             .map(\.0)
         if !added.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Recently added")
+                Text("最近添加")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(Console.text)
                     .padding(.horizontal, 20)
@@ -372,16 +372,16 @@ struct HomeView: View {
     private var empty: some View {
         if router.platform != .all, !Launcher.items(store: store, host: host).isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text(router.platform == .ps4 ? "No PS4 games yet" : "No Android games or apps yet")
+                Text(router.platform == .ps4 ? "暂无 PS4 游戏" : "暂无 Android 游戏或应用")
                     .font(.system(size: 26, weight: .heavy))
                     .foregroundStyle(Console.text)
                 Text(router.platform == .ps4
-                     ? "Put an extracted PS4 game folder in Files, in Husk's PS4 Games folder, or add one with the + in the menu."
-                     : "Add an APK or a bundle from the menu, or share one to Husk.")
+                     ? "请在“文件”应用的 Husk/PS4 Games 目录中放入已解压的游戏文件夹，或通过菜单栏 + 号添加。"
+                     : "请通过菜单栏 + 号添加 APK 或安装包，或分享文件至 Husk。")
                     .font(.subheadline)
                     .foregroundStyle(Console.textDim)
                     .fixedSize(horizontal: false, vertical: true)
-                Button("Show All") { router.platform = .all }
+                Button("显示全部") { router.platform = .all }
                     .buttonStyle(ConsolePlayButtonStyle())
                     .padding(.top, 6)
             }
@@ -798,7 +798,7 @@ struct LibraryScreen: View {
                         PlatformChips(selection: $router.platform)
                         Spacer(minLength: 0)
                         Menu {
-                            Picker("Show", selection: $router.libraryFilter) {
+                            Picker("筛选显示", selection: $router.libraryFilter) {
                                 ForEach(LibraryFilter.allCases) { Text($0.title).tag($0) }
                             }
                         } label: {
@@ -808,9 +808,9 @@ struct LibraryScreen: View {
                                 .foregroundStyle(router.libraryFilter == .all ? Console.textDim : Theme.accent)
                                 .frame(width: 36, height: 36)
                         }
-                        .accessibilityLabel("Games or Apps")
+                        .accessibilityLabel("游戏或应用")
                     }
-                    SearchField(text: $query, prompt: "Search games and apps")
+                    SearchField(text: $query, prompt: "搜索游戏与应用")
                     if let busy = store.busy { BusyStrip(text: busy) }
                     if let busy = host.busy { BusyStrip(text: busy) }
 
@@ -825,12 +825,12 @@ struct LibraryScreen: View {
                     if router.platform != .android {
                         section("PlayStation 4", playstation,
                                 empty: router.platform == .ps4 && query.isEmpty
-                                    ? (PS4Store.available ? "Put an extracted game folder in Husk's PS4 Games folder in Files."
-                                                          : "PS4 games need iOS 17.4 or later.")
+                                    ? (PS4Store.available ? "请在“文件”应用的 Husk/PS4 Games 目录中放入解压后的游戏文件夹。"
+                                                          : "PS4 游戏需要 iOS 17.4 或更高系统。")
                                     : nil)
                     }
                     if router.platform != .ps4 {
-                        section("Android", android, empty: query.isEmpty && router.libraryFilter == .all ? "Add a game with the + button." : nil)
+                        section("Android", android, empty: query.isEmpty && router.libraryFilter == .all ? "点击右上角 + 按钮添加游戏。" : nil)
                     }
                     if !query.isEmpty, items.isEmpty { NoResults(query: query) }
                 }
@@ -841,12 +841,12 @@ struct LibraryScreen: View {
             .huskHideScrollIndicators()
             .huskDismissKeyboardOnScroll()
             .background(Console.page.ignoresSafeArea())
-            .navigationTitle("Library")
+            .navigationTitle("游戏库")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { router.addSomething() } label: { Image(systemName: "plus") }
-                        .accessibilityLabel("Add a Game or App")
+                        .accessibilityLabel("添加游戏或应用")
                 }
             }
             .libraryDestinations()
@@ -887,12 +887,12 @@ struct LibraryScreen: View {
         switch item {
         case .game(let g):
             if g.packageName == GeodeSupport.launcherPackage { return "Geode" }
-            return g.report?.canRun == true ? nil : "May not run"
+            return g.report?.canRun == true ? nil : "可能无法运行"
         case .android:
-            if AndroidHost.shared.isReady { return "Running" }
-            return guest.state == .ready ? nil : "Not installed"
-        case .app: return "Emulator"
-        case .ps4: return PS4Store.available ? nil : "Needs iOS 17.4"
+            if AndroidHost.shared.isReady { return "运行中" }
+            return guest.state == .ready ? nil : "未安装"
+        case .app: return "模拟器"
+        case .ps4: return PS4Store.available ? nil : "需要 iOS 17.4"
         }
     }
 }

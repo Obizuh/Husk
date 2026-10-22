@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import Foundation
 import Compression
+import UIKit
 
 /// Manages the Android guest that lives in Documents.
 ///
@@ -536,6 +537,7 @@ final class GuestImage: ObservableObject {
 
     func download() {
         if case .downloading = state { return }
+        UIApplication.shared.isIdleTimerDisabled = true
         state = .downloading(progress: 0, received: 0, total: 0)
         HuskLog.log("guest", "downloading guest image from \(Self.imageURL.absoluteString)")
 
@@ -579,6 +581,7 @@ final class GuestImage: ObservableObject {
             return
         }
         isFetchingSnapshot = true
+        UIApplication.shared.isIdleTimerDisabled = true
         state = .downloading(progress: 0, received: 0, total: 0)
         HuskLog.log("guest", "downloading pre-booted snapshot (about 2 GB)")
         fetcher = SnapshotFetcher(
@@ -828,6 +831,7 @@ final class GuestImage: ObservableObject {
     }
 
     func cancel() {
+        UIApplication.shared.isIdleTimerDisabled = false
         task?.cancel()
         task = nil
         state = .missing
@@ -835,6 +839,7 @@ final class GuestImage: ObservableObject {
     }
 
     fileprivate func finished(tempURL: URL, digest: String?) {
+        UIApplication.shared.isIdleTimerDisabled = false
         state = .installing
         HuskLog.log("guest", "download complete; installing")
         // A download that arrived is not a download that arrived intact. When
@@ -918,6 +923,7 @@ final class GuestImage: ObservableObject {
     }
 
     fileprivate func failed(_ message: String) {
+        UIApplication.shared.isIdleTimerDisabled = false
         HuskLog.log("guest", "download FAILED: \(message)")
         state = .failed(message)
     }

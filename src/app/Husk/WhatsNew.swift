@@ -15,24 +15,24 @@ enum WhatsNew {
     /// The version whose notes these are. A build of the same version shows nothing again.
     static let version = "3.0.0"
     static let items: [Item] = [
-        Item(symbol: "gamecontroller.fill", title: "A new Husk",
-             detail: "A console-style home: your games on a shelf, the one you pick fills the screen with its artwork, and Play is one tap away. Android and PS4 games side by side, a new library, in light or dark as Settings › Appearance says."),
-        Item(symbol: "playstation.logo", title: "PS4 games",
-             detail: "Add a PS4 game with the + button, as a fake package (.pkg), a folder of them, or an extracted game folder, and play it from your library. Updates install beside their game, shaders are kept between launches, and games that ask for a name bring up the keyboard."),
-        Item(symbol: "square.stack.3d.up.fill", title: "Hundreds more Android games",
-             detail: "Hundreds of newly working games on the compatibility list, unofficial ports like Sonic Robo Blast 2, Ring Racers, NetHack and PokeWilds, Flutter games that showed a blank screen draw again, Godot 4 games run, and Python games get online."),
-        Item(symbol: "arrow.down.circle.fill", title: "Complete Store downloads",
-             detail: "Games that keep their data in expansion files get them with the download, and games split into many pieces load."),
-        Item(symbol: "keyboard.fill", title: "Typing everywhere",
-             detail: "Text fields in Unity, Java, Flutter, cocos2d-x and SDL games bring up the keyboard."),
-        Item(symbol: "textformat", title: "Chinese, Japanese and Korean",
-             detail: "Download the fonts in Settings › Fonts, and games stop showing empty boxes."),
-        Item(symbol: "bolt.fill", title: "JIT on its own",
-             detail: "TrollStore installs turn JIT on at launch, and Husk says on screen when something can't start without it."),
-        Item(symbol: "iphone", title: "iOS 15",
-             detail: "Husk now runs on iOS 15.5 and later (PS4 games need iOS 17.4)."),
-        Item(symbol: "wrench.and.screwdriver.fill", title: "Fixes",
-             detail: "Android no longer crashes after its download, the full Android emulator moved into Settings with a warning, closing Husk from the app switcher isn't reported as a crash, and much more."),
+        Item(symbol: "gamecontroller.fill", title: "全新 Husk 体验",
+             detail: "主机风格的主屏幕：应用陈列在书架上，选中即可全屏展示精美海报，一键点击“开始游戏”。Android 与 PS4 游戏并排呈现，全新设计的游戏库，完美适配深浅色外观。"),
+        Item(symbol: "playstation.logo", title: "PS4 游戏运行",
+             detail: "点击 + 号即可添加 PS4 假包 (.pkg)、包文件夹或解压后的游戏文件夹，并直接在游戏库中启动。更新补丁可自动识别归档，着色器缓存跨次启动保持，支持虚拟键盘输入游戏名。"),
+        Item(symbol: "square.stack.3d.up.fill", title: "新增支持数百款 Android 游戏",
+             detail: "兼容性列表中新增数百款可完美运行的游戏，支持 Sonic Robo Blast 2、Ring Racers、NetHack、PokeWilds 等非官方移植版，修复 Flutter 游戏黑屏，支持 Godot 4 及 Python 游戏网络连接。"),
+        Item(symbol: "arrow.down.circle.fill", title: "完整的商店下载功能",
+             detail: "带 OBB 数据包的游戏在下载时将自动完整下载，拆分包 (Split APKs) 可直接加载安装。"),
+        Item(symbol: "keyboard.fill", title: "全局虚拟键盘呼出",
+             detail: "Unity、Java、Flutter、cocos2d-x 及 SDL 游戏内的输入框均可正常唤起 iOS 软键盘输入。"),
+        Item(symbol: "textformat", title: "中日韩文字体支持",
+             detail: "前往“设置 › 字体设置”一键下载 Noto Sans CJK 字体，彻底告别游戏中文方块乱码。"),
+        Item(symbol: "bolt.fill", title: "自动化 JIT 体验",
+             detail: "TrollStore 安装用户可在打开时自动唤起开启 JIT，并在缺少 JIT 时给出清晰直观的屏幕提示。"),
+        Item(symbol: "iphone", title: "兼容 iOS 15 系统",
+             detail: "Husk 现已支持最低 iOS 15.5 及更高版本（PS4 游戏需 iOS 17.4+）。"),
+        Item(symbol: "wrench.and.screwdriver.fill", title: "稳定性与问题修复",
+             detail: "修复 Android 镜像下载后闪退的问题，将完整模拟器移入设置中并配有安全提示，从多任务上滑退出不再误报崩溃，以及众多底层优化。"),
     ]
 
     private static let seenKey = "husk.whatsNew.seen"
@@ -56,8 +56,8 @@ struct WhatsNewSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("What's New in Husk \(WhatsNew.version)").font(.largeTitle.weight(.bold))
-                        Text("A new look, PS4 games, and hundreds more Android games.").foregroundStyle(.secondary)
+                        Text("Husk \(WhatsNew.version) 新特性").font(.largeTitle.weight(.bold))
+                        Text("全新视觉设计、PS4 游戏支持及数百款 Android 游戏适配。").foregroundStyle(.secondary)
                     }
                     .padding(.top, 36)
                     ForEach(WhatsNew.items) { item in
@@ -78,7 +78,7 @@ struct WhatsNewSheet: View {
                 .padding(.bottom, 20)
             }
             Button(action: done) {
-                Text("Continue").font(.headline).frame(maxWidth: .infinity).padding(.vertical, 8)
+                Text("继续").font(.headline).frame(maxWidth: .infinity).padding(.vertical, 8)
             }
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 28)

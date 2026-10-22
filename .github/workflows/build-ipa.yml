@@ -1,0 +1,80 @@
+name: Build Husk IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - zh-cn-and-ci
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+
+jobs:
+  build:
+    name: Build IPA
+    runs-on: macos-14
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode version
+        run: |
+          XC="$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)"
+          if [ -n "$XC" ]; then
+            echo "Using $XC"
+            sudo xcode-select -s "$XC/Contents/Developer"
+          fi
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Install build tools & dependencies
+        run: |
+          brew install meson ninja pkg-config xcodegen qemu bison flex gettext || true
+          /opt/homebrew/bin/python3 -m pip install --break-system-packages --user pyyaml mako packaging || true
+          echo "$(brew --prefix bison 2>/dev/null || echo /opt/homebrew/opt/bison)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix flex 2>/dev/null || echo /opt/homebrew/opt/flex)/bin" >> "$GITHUB_PATH"
+          rustup target add aarch64-apple-ios || true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            third_party/sources
+            third_party/gpu
+            build/ios-arm64/sysroot
+          key: deps-${{ runner.os }}-${{ hashFiles('scripts/sources.sh', 'scripts/build_ios.sh', 'scripts/build_angle_ios.sh', 'scripts/build_gpu_ios.sh', 'patches/**') }}
+          restore-keys: |
+            deps-${{ runner.os }}-
+
+      - name: Make scripts executable
+        run: |
+          chmod +x scripts/*.sh
+
+      - name: Build IPA and TIPA
+        run: |
+          mkdir -p build
+          ./scripts/ci_build.sh "$PWD/build/Husk.ipa"
+
+      - name: Upload Husk IPA & TIPA Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Husk-iOS-Packages
+          path: |
+            build/Husk.ipa
+            build/Husk.tipa
+          if-no-files-found: error
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: |
+            build/logs
+            /tmp/husk_ipa/build.log
+          if-no-files-found: ignore

@@ -1,0 +1,29 @@
+workflows:
+  build-husk:
+    name: Build Husk IPA
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      vars:
+        SDKMINVER: "15.5"
+    scripts:
+      - name: Check Xcode & iOS SDK
+        script: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+      - name: Install build tools & dependencies
+        script: |
+          brew install meson ninja pkg-config xcodegen qemu bison flex gettext || true
+          /opt/homebrew/bin/python3 -m pip install --break-system-packages --user pyyaml mako packaging || true
+          rustup target add aarch64-apple-ios || true
+      - name: Build Husk IPA and TIPA
+        script: |
+          export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"
+          chmod +x scripts/*.sh
+          mkdir -p build
+          ./scripts/ci_build.sh "$PWD/build/Husk.ipa"
+    artifacts:
+      - build/*.ipa
+      - build/*.tipa
+      - build/logs/**
+      - /tmp/husk_ipa/build.log
