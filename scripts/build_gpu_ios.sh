@@ -67,6 +67,8 @@ echo "==> virglrenderer (render server in thread mode)"
 # constraint that makes QEMU an in-process library here. UTM uses process mode
 # on macOS and thread mode everywhere else for exactly this reason.
 ( cd "$GPU/virgl"
+  # Fix C syntax error: a label cannot immediately precede a declaration in C99/C11
+  python3 -c "p='src/vrend/vrend_renderer.c'; s=open(p).read(); open(p,'w').write(s.replace('angle_done:\r\n', 'angle_done: ;\r\n').replace('angle_done:\n', 'angle_done: ;\n'))"
   rm -rf _build
   $MESON setup _build --cross-file "$HUSK_ROOT/build/ios-arm64/cross-ios-darwin.meson" \
       --prefix "$PREFIX" --default-library=static \
